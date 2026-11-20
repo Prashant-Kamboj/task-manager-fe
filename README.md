@@ -1,12 +1,12 @@
-# Welcome to React Router!
+# Task Manager Client
 
-A modern, production-ready template for building full-stack React applications using React Router.
+TypeScript client for the Task Manager API, built with React Router 7 framework mode.
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
 
 ## Features
 
-- 🚀 Server-side rendering
+- 🚀 React Router 7 framework mode with SSR
 - ⚡️ Hot Module Replacement (HMR)
 - 📦 Asset bundling and optimization
 - 🔄 Data loading and mutations
@@ -24,6 +24,8 @@ Install the dependencies:
 npm install
 ```
 
+Copy `.env.example` to `.env` and set `VITE_API_URL` to the backend URL. The browser talks to the backend API; no Supabase secret is ever placed in this project.
+
 ### Development
 
 Start the development server with HMR:
@@ -33,6 +35,14 @@ npm run dev
 ```
 
 Your application will be available at `http://localhost:5173`.
+
+The first route modules demonstrate the intended data flow:
+
+- `/login` uses a `clientAction` to sign in through the backend.
+- `/signup` uses a `clientAction` to create an account through the backend and handles email confirmation.
+- `/workspaces` uses a `clientLoader` to fetch workspaces and a `clientAction` to create one.
+- `/logout` uses a `clientAction` to clear the browser session and redirect to login.
+- Actions automatically revalidate loader data after mutations.
 
 ## Building for Production
 
