@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getSession } from "../lib/session";
+import { getSession } from "../../../lib/session";
+import "./style.css";
 
 const apiUrl =
   (import.meta.env.VITE_API_URL as string | undefined) ??
@@ -16,9 +17,7 @@ export default function McpAuthorize() {
     const session = getSession();
     if (!session) {
       const returnTo = `${window.location.pathname}${window.location.search}${window.location.search ? "&" : "?"}autoApprove=1`;
-      window.location.assign(
-        `/login?returnTo=${encodeURIComponent(returnTo)}`
-      );
+      window.location.assign(`/login?returnTo=${encodeURIComponent(returnTo)}`);
       return;
     }
     setStatus("working");

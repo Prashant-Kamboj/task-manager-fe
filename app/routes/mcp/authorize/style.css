@@ -1,0 +1,159 @@
+html,
+body {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  background: #f6f5f2;
+  color: #20221f;
+  font-family: var(--font-sans);
+}
+
+body {
+  min-height: 100vh;
+}
+
+.page-shell {
+  width: min(100% - 3rem, 68rem);
+  margin: 0 auto;
+  padding: 5rem 0;
+}
+
+.page-shell.narrow {
+  width: min(100% - 3rem, 32rem);
+}
+
+.hero {
+  min-height: 70vh;
+  display: grid;
+  align-content: center;
+}
+
+.eyebrow {
+  margin: 0 0 .75rem;
+  color: #a44a27;
+  font-size: .75rem;
+  font-weight: 800;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+h1 {
+  max-width: 13ch;
+  margin: 0;
+  color: #1f332b;
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  letter-spacing: -.07em;
+  line-height: .92;
+}
+
+.narrow h1,
+.topbar h1 {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.lede {
+  max-width: 38rem;
+  margin: 1.5rem 0 0;
+  color: #68706a;
+  font-size: 1.12rem;
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-top: 2rem;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  padding: .8rem 1.2rem;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:disabled {
+  cursor: wait;
+  opacity: .6;
+}
+
+.primary {
+  background: #1f332b;
+  color: #fff;
+}
+
+.secondary {
+  background: #e4e4dc;
+  color: #1f332b;
+}
+
+.back-link {
+  color: #a44a27;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.card {
+  border: 1px solid #deded5;
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, .78);
+  padding: 1.35rem;
+  box-shadow: 0 1rem 3rem rgba(31, 51, 43, .06);
+}
+
+.form-stack {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+label {
+  display: grid;
+  gap: .45rem;
+  color: #4e5951;
+  font-size: .9rem;
+  font-weight: 700;
+}
+
+input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d3d7d0;
+  border-radius: .7rem;
+  background: #fff;
+  padding: .8rem .9rem;
+  color: #20221f;
+  font: inherit;
+}
+
+input:focus {
+  outline: 3px solid rgba(164, 74, 39, .18);
+  border-color: #a44a27;
+}
+
+.error-text {
+  margin: 0;
+  color: #a02f2f;
+}
+
+.success-text {
+  margin: 0;
+  color: #28724c;
+}
+
+.form-footer {
+  color: #68706a;
+  text-align: center;
+}
+
+.form-footer a {
+  color: #a44a27;
+  font-weight: 700;
+}

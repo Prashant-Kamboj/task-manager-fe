@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useFetcher } from "react-router";
+import { Trash2 } from "lucide-react";
 
 export function DeleteWorkspaceModal({
   workspaceId,
@@ -21,12 +22,14 @@ export function DeleteWorkspaceModal({
   return (
     <>
       <button
-        className="button danger small"
+        className="button danger small delete-icon-button"
         type="button"
-        onClick={() => setIsOpen(true)}
+        aria-label={`Delete ${workspaceName}`}
+        title={`Delete ${workspaceName}`}
+        onClick={(event) => { event.stopPropagation(); setIsOpen(true); }}
         disabled={isDeleting}
       >
-        Delete
+        <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
       </button>
 
       {isOpen ? (

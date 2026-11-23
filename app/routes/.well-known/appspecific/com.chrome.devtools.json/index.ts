@@ -4,3 +4,4 @@ export async function loader() {
     headers: { "Content-Type": "application/json" },
   });
 }
+import "./style.css";

@@ -1,0 +1,218 @@
+.scout-page {
+    min-height: 100vh;
+    display: flex;
+    background: #fff;
+    color: #18181b;
+}
+
+.scout-main {
+    min-width: 0;
+    flex: 1;
+    padding: 36px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    background: radial-gradient(600px 320px at 15% 0%, rgba(99, 102, 241, .16), transparent 70%), radial-gradient(520px 320px at 95% 100%, rgba(56, 189, 248, .16), transparent 70%), radial-gradient(420px 260px at 90% 5%, rgba(168, 85, 247, .10), transparent 70%);
+}
+
+.scout-heading h1 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -.02em;
+}
+
+.scout-heading h1>span:last-child {
+    background: linear-gradient(90deg, #4f46e5, #0369a1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.scout-heading p {
+    margin: 6px 0 0;
+    color: #63636b;
+}
+
+.scout-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+.scout-filters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    color: #63636b;
+}
+
+.scout-filters button,
+.scout-prompts button,
+.scout-sources a {
+    border: 1px solid #e4e4e7;
+    border-radius: 16px;
+    background: #fff;
+    color: #18181b;
+    font: inherit;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+    cursor: pointer;
+}
+
+.scout-filters button {
+    height: 32px;
+    padding: 0 12px;
+    font-size: 13px;
+}
+
+.scout-filters .selected {
+    border-color: #312e81;
+    background: #312e81;
+    color: #fff;
+}
+
+.scout-conversation,
+.scout-composer {
+    width: 100%;
+    max-width: 760px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.scout-question {
+    align-self: flex-end;
+    max-width: 520px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: #312e81;
+    color: #fff;
+}
+
+.scout-answer {
+    display: flex;
+    gap: 12px;
+    line-height: 1.55;
+}
+
+.scout-avatar {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #312e81;
+    color: #fff;
+    font: 600 11px/30px Inter, sans-serif;
+}
+
+.scout-answer p {
+    margin: 0;
+}
+
+.scout-answer ol {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 12px 0;
+    padding-left: 20px;
+}
+
+.scout-sources {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    color: #63636b;
+    font-size: 13px;
+}
+
+.scout-sources a {
+    height: 28px;
+    box-sizing: border-box;
+    padding: 0 10px;
+    border-radius: 14px;
+    color: #18181b;
+    text-decoration: none;
+    line-height: 26px;
+    font-size: 12px;
+}
+
+.scout-composer {
+    margin-top: auto;
+    gap: 12px;
+}
+
+.scout-prompts {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.scout-prompts button {
+    padding: 10px 14px;
+    border-radius: 6px;
+    text-align: left;
+}
+
+.scout-input-row {
+    display: flex;
+    gap: 8px;
+}
+
+.scout-input-row input {
+    width: 100%;
+    height: 44px;
+    box-sizing: border-box;
+    padding: 0 12px;
+    border: 1px solid #e4e4e7;
+    border-radius: 6px;
+    background: #fff;
+    font: inherit;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+}
+
+.scout-send {
+    height: 44px;
+    flex: none;
+    padding: 0 16px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #312e81, #4338ca);
+    color: #fff;
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .scout-page {
+        display: block;
+    }
+
+    .scout-main {
+        padding: 28px 20px;
+    }
+
+    .scout-question {
+        align-self: stretch;
+    }
+
+    .scout-input-row {
+        flex-direction: column;
+    }
+
+    .scout-send {
+        width: 100%;
+    }
+}

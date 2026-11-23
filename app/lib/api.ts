@@ -63,6 +63,14 @@ export function signIn(email: string, password: string): Promise<AuthSession> {
   );
 }
 
+export function requestPasswordReset(email: string): Promise<void> {
+  return request<void>(
+    "/api/v1/auth/forgot-password",
+    { method: "POST", body: JSON.stringify({ email }) },
+    false
+  );
+}
+
 export interface SignUpResult {
   user: { id: string; email?: string } | null;
   profile: {
