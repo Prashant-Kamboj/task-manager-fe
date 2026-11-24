@@ -1,23 +1,23 @@
 import { Form, Link, redirect, useNavigation } from "react-router";
 import { useState } from "react";
 import type { Route } from "./+types/index";
-import { createWorkspace } from "../../../lib/api";
+import { createWorkspace } from "../../../lib/api.server";
+import { requireAuth } from "../../../lib/session.server";
 import "./style.css";
 
 type Invite = { email: string; role: "admin" | "member" };
 
-export async function clientLoader() {
-  const { getSession } = await import("../../../lib/session");
-  if (!getSession()) throw redirect("/login");
+export async function loader({ request }: Route.LoaderArgs) {
+  await requireAuth(request);
   return null;
 }
 
-export async function clientAction({ request }: Route.ClientActionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const name = String(formData.get("name") ?? "").trim();
   if (!name) return { error: "Workspace name is required." };
   try {
-    await createWorkspace(name);
+    await createWorkspace(request, name);
     return redirect("/workspaces");
   } catch (error) {
     return {

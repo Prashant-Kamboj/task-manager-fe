@@ -1,84 +1,43 @@
-import { useEffect, useState } from "react";
-import { getSession } from "../../../lib/session";
-import { getValidSession } from "../../../lib/api";
+import { Form, redirect, useNavigation } from "react-router";
+import type { Route } from "./+types/index";
+import { requireAuth } from "../../../lib/session.server";
 import "./style.css";
 
-const apiUrl =
-  (import.meta.env.VITE_API_URL as string | undefined) ??
-  "http://localhost:3000";
+const apiUrl = process.env.VITE_API_URL ?? "http://localhost:3000";
+
+export async function action({ request }: Route.ActionArgs) {
+  const session = await requireAuth(request);
+  const formData = await request.formData();
+  const response = await fetch(`${apiUrl}/mcp/oauth/approve`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      clientId: formData.get("client_id"),
+      redirectUri: formData.get("redirect_uri"),
+      codeChallenge: formData.get("code_challenge"),
+      state: formData.get("state"),
+      scope: formData.get("scope"),
+      accessToken: session.accessToken,
+      refreshToken: session.refreshToken,
+    }),
+  });
+  const body = (await response.json()) as { redirectUri?: string; error?: { message?: string } };
+  if (!response.ok || !body.redirectUri) throw new Error(body.error?.message ?? "Could not authorize MCP");
+  return redirect(body.redirectUri);
+}
 
 export default function McpAuthorize() {
-  const [status, setStatus] = useState<"ready" | "working" | "error">("ready");
-  const [error, setError] = useState("");
-  const params = new URLSearchParams(
-    typeof window === "undefined" ? "" : window.location.search
-  );
-
-  async function approve() {
-    if (!getSession()) {
-      const returnTo = `${window.location.pathname}${window.location.search}${window.location.search ? "&" : "?"}autoApprove=1`;
-      window.location.assign(`/login?returnTo=${encodeURIComponent(returnTo)}`);
-      return;
-    }
-    setStatus("working");
-    try {
-      // The MCP flow is often opened from a stale mobile browser tab. Make
-      // sure the access token is fresh before handing it to the backend.
-      const session = await getValidSession();
-      const response = await fetch(`${apiUrl}/mcp/oauth/approve`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          clientId: params.get("client_id"),
-          redirectUri: params.get("redirect_uri"),
-          codeChallenge: params.get("code_challenge"),
-          state: params.get("state"),
-          scope: params.get("scope"),
-          accessToken: session.accessToken,
-          refreshToken: session.refreshToken,
-        }),
-      });
-      const body = (await response.json()) as {
-        redirectUri?: string;
-        error?: { message?: string };
-      };
-      if (!response.ok || !body.redirectUri) {
-        throw new Error(body.error?.message ?? "Could not authorize MCP");
-      }
-      window.location.assign(body.redirectUri);
-    } catch (cause) {
-      setStatus("error");
-      setError(
-        cause instanceof Error ? cause.message : "Could not authorize MCP"
-      );
-    }
-  }
-
-  useEffect(() => {
-    if (params.get("autoApprove") === "1" && getSession()) {
-      void approve();
-    }
-  }, []);
-
+  const navigation = useNavigation();
+  const params = new URLSearchParams(typeof window === "undefined" ? "" : window.location.search);
+  const isSubmitting = navigation.state === "submitting";
   return (
     <main className="page-shell narrow">
-      <p className="eyebrow">MCP connection</p>
-      <h1>Connect Task Manager</h1>
-      <p className="lede">
-        An AI client is requesting access to your Task Manager workspaces.
-      </p>
-      {status === "error" ? (
-        <p className="error-text" role="alert">
-          {error}
-        </p>
-      ) : null}
-      <button
-        className="button primary"
-        onClick={approve}
-        disabled={status === "working"}
-      >
-        {status === "working" ? "Connecting…" : "Allow access"}
-      </button>
+      <p className="eyebrow">MCP connection</p><h1>Connect Task Manager</h1>
+      <p className="lede">An AI client is requesting access to your Task Manager workspaces.</p>
+      <Form method="post">
+        {["client_id", "redirect_uri", "code_challenge", "state", "scope"].map((key) => <input key={key} type="hidden" name={key} value={params.get(key) ?? ""} />)}
+        <button className="button primary" type="submit" disabled={isSubmitting}>{isSubmitting ? "Connecting…" : "Allow access"}</button>
+      </Form>
     </main>
   );
 }

@@ -1,8 +1,8 @@
 import { redirect } from "react-router";
 import type { Route } from "./+types/board";
 import { SideNav } from "../../../components/sideNav";
-import { listWorkspaces } from "../../../lib/api";
-import { getSession } from "../../../lib/session";
+import { listWorkspaces } from "../../../lib/api.server";
+import { requireAuth } from "../../../lib/session.server";
 import "./style.css";
 import "./board.css";
 
@@ -54,9 +54,9 @@ const columns = [
   },
 ] as const;
 
-export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  if (!getSession()) throw redirect("/login");
-  const workspaces = await listWorkspaces();
+export async function loader({ request, params }: Route.LoaderArgs) {
+  await requireAuth(request);
+  const workspaces = await listWorkspaces(request);
   const workspace = workspaces.find((item) => item.id === params.workspaceId);
   const project = projects.find(
     (item) => item.name.toLowerCase().replaceAll(" ", "-") === params.projectId

@@ -1,15 +1,13 @@
 import { redirect } from 'react-router';
 import type { Route } from './+types/index';
-import { clearSession } from '../../lib/session';
+import { clearAuthCookie } from '../../lib/session.server';
 
-export async function clientAction(_args: Route.ClientActionArgs) {
-  clearSession();
-  return redirect('/login');
+export async function action({ request }: Route.ActionArgs) {
+  return redirect('/login', { headers: { "Set-Cookie": await clearAuthCookie(request) } });
 }
 
-export async function clientLoader(_args: Route.ClientLoaderArgs) {
-  clearSession();
-  throw redirect('/login');
+export async function loader({ request }: Route.LoaderArgs) {
+  throw redirect('/login', { headers: { "Set-Cookie": await clearAuthCookie(request) } });
 }
 
 export default function Logout() { return null; }

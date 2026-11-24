@@ -1,7 +1,7 @@
-import { redirect } from "react-router";
+import { Link, redirect } from "react-router";
 import type { Route } from "./+types/index";
-import { listWorkspaces } from "../../../lib/api";
-import { getSession } from "../../../lib/session";
+import { listWorkspaces } from "../../../lib/api.server";
+import { requireAuth } from "../../../lib/session.server";
 import { SideNav } from "../../../components/sideNav";
 import "./style.css";
 
@@ -21,9 +21,9 @@ const projects = [
   },
 ];
 
-export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  if (!getSession()) throw redirect("/login");
-  const workspaces = await listWorkspaces();
+export async function loader({ request, params }: Route.LoaderArgs) {
+  await requireAuth(request);
+  const workspaces = await listWorkspaces(request);
   const workspace = workspaces.find((item) => item.id === params.workspaceId);
   if (!workspace) throw redirect("/workspaces");
   return { workspace };
@@ -50,9 +50,9 @@ export default function Projects({ loaderData }: Route.ComponentProps) {
           {projects.map((project) => {
             const projectId = project.name.toLowerCase().replaceAll(" ", "-");
             return (
-              <a
+              <Link
                 className="project-card"
-                href={`/workspaces/${workspace.id}/projects/${projectId}`}
+                to={`/workspaces/${workspace.id}/projects/${projectId}`}
                 key={project.name}
               >
                 <h2>{project.name}</h2>
@@ -78,7 +78,7 @@ export default function Projects({ loaderData }: Route.ComponentProps) {
                     </span>
                   ))}
                 </div>
-              </a>
+              </Link>
             );
           })}
         </div>

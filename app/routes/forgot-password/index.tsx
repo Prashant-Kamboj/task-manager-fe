@@ -1,15 +1,15 @@
 import { Form, Link, useNavigation } from "react-router";
 import type { Route } from "./+types/index";
-import { requestPasswordReset } from "../../lib/api";
+import { requestPasswordReset } from "../../lib/api.server";
 import "./style.css";
 
-export async function clientAction({ request }: Route.ClientActionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const email = String(formData.get("email") ?? "").trim();
   if (!email) return { error: "Email is required." };
 
   try {
-    await requestPasswordReset(email);
+    await requestPasswordReset(request, email);
     return { success: "If an account exists for that email, we sent a reset link." };
   } catch (error) {
     return {

@@ -11,51 +11,51 @@ import {
   updateWorkspaceMember,
   type Workspace,
   type WorkspaceMember,
-} from "../../lib/api";
-import { getSession } from "../../lib/session";
+} from "../../lib/api.server";
+import { requireAuth } from "../../lib/session.server";
 import { DeleteWorkspaceModal } from "../../components/delete-workspace-modal";
 
-export async function clientLoader() {
-  if (!getSession()) throw redirect("/login");
-  const workspaces = await listWorkspaces();
+export async function loader({ request }: Route.LoaderArgs) {
+  await requireAuth(request);
+  const workspaces = await listWorkspaces(request);
   const workspacesWithMembers = await Promise.all(
     workspaces.map(async (workspace) => ({
       ...workspace,
-      members: (await listWorkspaceMembers(workspace.id)) ?? [],
+      members: (await listWorkspaceMembers(request, workspace.id)) ?? [],
     }))
   );
   return { workspaces: workspacesWithMembers };
 }
 
-export async function clientAction({ request }: Route.ClientActionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const intent = String(formData.get("intent") ?? "create-workspace");
   try {
     if (intent === "create-workspace") {
       const name = String(formData.get("name") ?? "").trim();
       if (!name) return { error: "Workspace name is required." };
-      await createWorkspace(name);
+      await createWorkspace(request, name);
     } else if (intent === "add-member") {
       const workspaceId = String(formData.get("workspaceId") ?? "");
       const userId = String(formData.get("userId") ?? "").trim();
       const role = String(formData.get("role") ?? "member") as
         "admin" | "member";
       if (!workspaceId || !userId) return { error: "A user ID is required." };
-      await addWorkspaceMember(workspaceId, userId, role);
+      await addWorkspaceMember(request, workspaceId, userId, role);
     } else if (intent === "update-member") {
       const workspaceId = String(formData.get("workspaceId") ?? "");
       const memberId = String(formData.get("memberId") ?? "");
       const role = String(formData.get("role") ?? "member") as
         "admin" | "member";
-      await updateWorkspaceMember(workspaceId, memberId, role);
+      await updateWorkspaceMember(request, workspaceId, memberId, role);
     } else if (intent === "remove-member") {
       const workspaceId = String(formData.get("workspaceId") ?? "");
       const memberId = String(formData.get("memberId") ?? "");
-      await removeWorkspaceMember(workspaceId, memberId);
+      await removeWorkspaceMember(request, workspaceId, memberId);
     } else if (intent === "delete-workspace") {
       const workspaceId = String(formData.get("workspaceId") ?? "");
       if (!workspaceId) return { error: "A workspace ID is required." };
-      await deleteWorkspace(workspaceId);
+      await deleteWorkspace(request, workspaceId);
     }
     return { error: null };
   } catch (error) {

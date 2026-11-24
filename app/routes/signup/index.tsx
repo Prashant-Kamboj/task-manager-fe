@@ -1,9 +1,15 @@
 import { Form, Link, redirect, useNavigation } from 'react-router';
 import type { Route } from './+types/index';
-import { signUp } from '../../lib/api';
-import { saveSession } from '../../lib/session';
+import { signUp } from '../../lib/api.server';
+import { createAuthCookie } from '../../lib/session.server';
 
-export async function clientAction({ request }: Route.ClientActionArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
+  const { getAuthSession } = await import('../../lib/session.server');
+  if (await getAuthSession(request)) throw redirect('/workspaces');
+  return null;
+}
+
+export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const fullName = String(formData.get('fullName') ?? '').trim();
   const email = String(formData.get('email') ?? '').trim();
@@ -13,8 +19,8 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   if (password.length < 8) return { error: 'Password must be at least 8 characters.' };
   if (password !== confirmPassword) return { error: 'Passwords do not match.' };
   try {
-    const result = await signUp(email, password, fullName);
-    if (result.session) { saveSession(result.session); return redirect('/workspaces'); }
+    const result = await signUp(request, email, password, fullName);
+    if (result.session) { return redirect('/workspaces', { headers: { "Set-Cookie": await createAuthCookie(result.session) } }); }
     return { success: 'Account created. Check your email to confirm your account, then sign in.' };
   } catch (error) { return { error: error instanceof Error ? error.message : 'Unable to create your account.' }; }
 }
