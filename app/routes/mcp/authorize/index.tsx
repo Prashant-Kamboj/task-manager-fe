@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getSession } from "../../../lib/session";
+import { getValidSession } from "../../../lib/api";
 import "./style.css";
 
 const apiUrl =
@@ -14,14 +15,16 @@ export default function McpAuthorize() {
   );
 
   async function approve() {
-    const session = getSession();
-    if (!session) {
+    if (!getSession()) {
       const returnTo = `${window.location.pathname}${window.location.search}${window.location.search ? "&" : "?"}autoApprove=1`;
       window.location.assign(`/login?returnTo=${encodeURIComponent(returnTo)}`);
       return;
     }
     setStatus("working");
     try {
+      // The MCP flow is often opened from a stale mobile browser tab. Make
+      // sure the access token is fresh before handing it to the backend.
+      const session = await getValidSession();
       const response = await fetch(`${apiUrl}/mcp/oauth/approve`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

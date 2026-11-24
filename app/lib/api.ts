@@ -15,7 +15,7 @@ interface ApiErrorEnvelope {
   error?: { message?: string };
 }
 
-async function refreshSession(): Promise<AuthSession> {
+export async function refreshSession(): Promise<AuthSession> {
   const current = getSession();
   if (!current) throw new Error("You are not signed in");
   const response = await fetch(`${apiUrl}/api/v1/auth/refresh`, {
@@ -30,6 +30,21 @@ async function refreshSession(): Promise<AuthSession> {
   const body = (await response.json()) as ApiEnvelope<AuthSession>;
   saveSession(body.data);
   return body.data;
+}
+
+function isSessionExpired(session: AuthSession): boolean {
+  // Refresh slightly early so a token cannot expire while the MCP approval
+  // request is in flight. Supabase timestamps are expressed in seconds.
+  // If the persisted session has no absolute expiry, refresh it rather than
+  // guessing from expiresIn (which is only the token lifetime).
+  if (!session.expiresAt) return true;
+  return session.expiresAt <= Math.floor(Date.now() / 1000) + 60;
+}
+
+export async function getValidSession(): Promise<AuthSession> {
+  const session = getSession();
+  if (!session) throw new Error("You are not signed in");
+  return isSessionExpired(session) ? refreshSession() : session;
 }
 
 async function request<T>(
